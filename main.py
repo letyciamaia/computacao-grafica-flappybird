@@ -1,15 +1,3 @@
-# ════════════════════════════════════════════════
-#  main.py — Ponto de entrada do jogo
-# ════════════════════════════════════════════════
-#
-#  FLAPPY ME — Trabalho de Computação Gráfica
-#  Conceitos aplicados:
-#  - Aula 02: Framebuffer (pygame.Surface / display.flip)
-#  - Aula 03: Pontos P(x,y), Vetores V=(dx,dy),
-#             Translação, Escala, Rotação, Primitivas gráficas
-#  - Aula 04: Sistema de referência universo x dispositivo,
-#             Viewport/Clipping, Mapeamento de coordenadas
-
 import pygame
 import sys
 import os
@@ -23,7 +11,7 @@ pygame.init()
 pygame.mixer.init()
 
 screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
-pygame.display.set_caption("Flappy Me — CG")
+pygame.display.set_caption("teste")
 clock = pygame.time.Clock()
 
 font_big   = pygame.font.SysFont("Arial", 52, bold=True)

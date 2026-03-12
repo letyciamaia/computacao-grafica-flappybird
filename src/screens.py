@@ -31,7 +31,7 @@ def screen_start(screen, clock, fonts, photo_surf=None):
         sub = font_small.render("Pressione qualquer tecla para jogar", True, WHITE)
         screen.blit(sub, sub.get_rect(center=(SCREEN_W//2, SCREEN_H//2+110)))
 
-        cg = font_tiny.render("Computação Gráfica — Primitivas & Transformações", True, (200, 230, 255))
+        cg = font_tiny.render("Computação Gráfica", True, (200, 230, 255))
         screen.blit(cg, cg.get_rect(center=(SCREEN_W//2, SCREEN_H - 20)))
 
         pygame.display.flip()
@@ -56,7 +56,7 @@ def screen_gameover(screen, clock, fonts, score, hi, photo_surf=None):
         panel.fill((0, 0, 0, 140))
         screen.blit(panel, panel.get_rect(center=(SCREEN_W//2, SCREEN_H//2)))
 
-        go = font_big.render("GAME OVER", True, RED)
+        go = font_big.render("TRY AGAIN :( ", True, RED)
         screen.blit(go, go.get_rect(center=(SCREEN_W//2, SCREEN_H//2 - 70)))
 
         sc_txt = font_med.render(f"Pontuação: {score}", True, WHITE)
@@ -66,7 +66,7 @@ def screen_gameover(screen, clock, fonts, score, hi, photo_surf=None):
         screen.blit(hi_txt, hi_txt.get_rect(center=(SCREEN_W//2, SCREEN_H//2 + 35)))
 
         if score >= hi and score > 0:
-            new_rec = font_small.render("Novo Recorde!", True, YELLOW)
+            new_rec = font_small.render("Yup, novo record!", True, YELLOW)
             screen.blit(new_rec, new_rec.get_rect(center=(SCREEN_W//2, SCREEN_H//2 + 75)))
 
         if timer > 60:
