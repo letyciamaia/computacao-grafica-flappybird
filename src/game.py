@@ -110,6 +110,7 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
             BIRD_RADIUS * 2 - 8
         )
         hit = False
+        bird_limit = bird_y - BIRD_RADIUS
         for p in pipes:
             px = int(p['x'])
             if (bird_rect.colliderect(pygame.Rect(px-6, 0, PIPE_WIDTH+12, p['top'])) or
@@ -118,9 +119,8 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
 
         if bird_y + BIRD_RADIUS >= SCREEN_H - GROUND_H:
             hit = True
-        elif bird_y - BIRD_RADIUS <= 0:
-            hit = False
-            bird_y = max(0, min(SCREEN_H - BIRD_RADIUS, bird_y))
+        elif bird_limit <= 0:
+            bird_y = BIRD_RADIUS
 
         if hit:
             if snd_die: snd_die.play()

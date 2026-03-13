@@ -14,11 +14,10 @@ try:
     joystick = pygame.joystick.Joystick(0)
     print(joystick.get_name())
 except:
-    print("No joystick found!")
     joystick = None
 
 screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
-pygame.display.set_caption("teste")
+pygame.display.set_caption("Flappy Me")
 clock = pygame.time.Clock()
 
 font_big   = pygame.font.SysFont("Arial", 52, bold=True)
