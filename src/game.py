@@ -9,7 +9,6 @@ from src.draw import (draw_gradient_rect, draw_clouds, draw_pipe,
 
 HI_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "hiscore.txt")
 
-
 def load_hi():
     try:
         with open(HI_FILE) as f:
@@ -26,9 +25,9 @@ def save_hi(val):
         pass
 
 
-def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=None, snd_die=None):
+def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=None, snd_die=None, joystick=None):
     font_big, font_med, font_small, font_tiny = fonts
-
+    
     # Ponto inicial do pássaro: P(SCREEN_W*0.25, SCREEN_H*0.5)
     bird_x     = SCREEN_W * 0.25
     bird_y     = float(SCREEN_H // 2)
@@ -50,23 +49,23 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
 
     while True:
         clock.tick(FPS)
-
         # ── Eventos ──────────────────────────────
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 try: pygame.mixer.music.stop()
                 except: pass
                 pygame.quit(); sys.exit()
-            if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):
+            if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN, pygame.JOYBUTTONDOWN):
                 # Vetor impulso: V = (0, JUMP_VEL)
                 bird_vy = JUMP_VEL
                 if snd_jump: snd_jump.play()
-
+        
         # ── Física ───────────────────────────────
         # Vetor gravidade acumulado a cada frame: V_novo = V_antigo + (0, GRAVITY)
         bird_vy += GRAVITY
         bird_y  += bird_vy
         # Mapeamento velocidade -> ângulo (transformação geométrica, Aula 03)
+        print(f"Pos: {bird_y}, Vel: {bird_vy}")
         bird_angle = max(-25, min(90, bird_vy * 4.5))
 
         # ── Gera novos canos ─────────────────────
@@ -117,8 +116,11 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
                 bird_rect.colliderect(pygame.Rect(px-6, p['bot'], PIPE_WIDTH+12, SCREEN_H))):
                 hit = True; break
 
-        if bird_y + BIRD_RADIUS >= SCREEN_H - GROUND_H or bird_y - BIRD_RADIUS <= 0:
+        if bird_y + BIRD_RADIUS >= SCREEN_H - GROUND_H:
             hit = True
+        elif bird_y - BIRD_RADIUS <= 0:
+            hit = False
+            bird_y = max(0, min(SCREEN_H - BIRD_RADIUS, bird_y))
 
         if hit:
             if snd_die: snd_die.play()
