@@ -1,10 +1,14 @@
+# ════════════════════════════════════════════════
+#  game.py — Loop principal do jogo
+# ════════════════════════════════════════════════
+
 import pygame
 import sys
 import random
 import os
 from src.config import *
 from src.draw import (draw_gradient_rect, draw_clouds, draw_pipe,
-                      draw_ground, draw_bird, draw_score)
+                      draw_ground, draw_bird, draw_score, draw_stars, draw_explosion)
 
 
 HI_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "hiscore.txt")
@@ -43,6 +47,12 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
     hi             = load_hi()
     phase          = 0
 
+    # Estrelas — pontos P(x,y) com brilho variável (Aula 03)
+    stars = [(random.randint(0, SCREEN_W),
+              random.randint(0, SCREEN_H - GROUND_H),
+              random.randint(1, 2),
+              random.randint(100, 255)) for _ in range(60)]
+
     try:
         pygame.mixer.music.play(-1, start=MUSIC_START)
     except:
@@ -57,16 +67,34 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
                 try: pygame.mixer.music.stop()
                 except: pass
                 pygame.quit(); sys.exit()
-            if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):
-                # Vetor impulso: V = (0, JUMP_VEL)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    # Pause
+                    paused = True
+                    try: pygame.mixer.music.pause()
+                    except: pass
+                    while paused:
+                        for e in pygame.event.get():
+                            if e.type == pygame.QUIT:
+                                pygame.quit(); sys.exit()
+                            if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
+                                paused = False
+                                try: pygame.mixer.music.unpause()
+                                except: pass
+                        pause_txt = font_med.render("ESC para continuar", True, WHITE)
+                        screen.blit(pause_txt, pause_txt.get_rect(center=(SCREEN_W//2, SCREEN_H//2)))
+                        pygame.display.flip()
+                        clock.tick(FPS)
+                else:
+                    bird_vy = JUMP_VEL
+                    if snd_jump: snd_jump.play()
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 bird_vy = JUMP_VEL
                 if snd_jump: snd_jump.play()
 
         # ── Física ───────────────────────────────
-        # Vetor gravidade acumulado a cada frame: V_novo = V_antigo + (0, GRAVITY)
         bird_vy += GRAVITY
         bird_y  += bird_vy
-        # Mapeamento velocidade -> ângulo (transformação geométrica, Aula 03)
         bird_angle = max(-25, min(90, bird_vy * 4.5))
 
         # ── Gera novos canos ─────────────────────
@@ -81,11 +109,11 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
             })
             last_pipe_time = now
 
-        # ── Translação dos canos: V=(-PIPE_SPEED, 0) ──
+        # Translação dos canos: V=(-PIPE_SPEED, 0)
         for p in pipes:
             p['x'] -= PIPE_SPEED
 
-        # ── Clipping (Aula 04): remove fora da viewport ──
+        # Clipping (Aula 04): remove fora da viewport
         pipes = [p for p in pipes if p['x'] > -PIPE_WIDTH - 20]
 
         # ── Pontuação ────────────────────────────
@@ -102,6 +130,10 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
         # ── Parallax das nuvens ──────────────────
         clouds = [((cx - 0.6) % (SCREEN_W + 60) - 30, cy, sc)
                   for cx, cy, sc in clouds]
+
+        # ── Pisca as estrelas ────────────────────
+        stars = [(x, y, s, max(80, min(255, b + random.randint(-10, 10))))
+                 for x, y, s, b in stars]
 
         # ── Colisão (AABB simplificado) ──────────
         bird_rect = pygame.Rect(
@@ -122,22 +154,36 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
 
         if hit:
             if snd_die: snd_die.play()
+            # Animação de explosão
+            for frame in range(8):
+                draw_gradient_rect(screen, PHASES[phase]["sky_top"], PHASES[phase]["sky_bot"], (0, 0, SCREEN_W, SCREEN_H))
+                if phase in (2, 3, 4):
+                    draw_stars(screen, stars)
+                draw_clouds(screen, clouds)
+                for p in pipes:
+                    draw_pipe(screen, int(p['x']), p['top'], p['bot'])
+                draw_ground(screen, ground_offset)
+                draw_explosion(screen, bird_x, bird_y, frame)
+                pygame.display.flip()
+                pygame.time.wait(50)
             try: pygame.mixer.music.stop()
             except: pass
-            pygame.time.wait(200)
+            pygame.time.wait(100)
             hi = max(score, hi)
             save_hi(hi)
             return score, hi
 
-        # ── RENDERIZAÇÃO (escrita no framebuffer — Aula 02) ──
+        # ── RENDERIZAÇÃO (framebuffer — Aula 02) ──
         draw_gradient_rect(screen,
                            PHASES[phase]["sky_top"],
                            PHASES[phase]["sky_bot"],
                            (0, 0, SCREEN_W, SCREEN_H))
+        if phase in (2, 3, 4):
+            draw_stars(screen, stars)
         draw_clouds(screen, clouds)
         for p in pipes:
             draw_pipe(screen, int(p['x']), p['top'], p['bot'])
         draw_ground(screen, ground_offset)
         draw_bird(screen, bird_x, bird_y, bird_angle, photo_surf)
         draw_score(screen, score, hi, font_big, font_tiny)
-        pygame.display.flip()  # envia framebuffer ao monitor (Aula 02)
+        pygame.display.flip()

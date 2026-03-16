@@ -124,3 +124,22 @@ def draw_score(surface, score, hi, font_big, font_tiny):
     surface.blit(txt, txt.get_rect(center=(SCREEN_W//2, 50)))
     hi_txt = font_tiny.render(f"RECORDE: {hi}", True, WHITE)
     surface.blit(hi_txt, (SCREEN_W - hi_txt.get_width() - 8, 8))
+    
+def draw_stars(surface, stars):
+    """Partículas — pontos P(x,y) com brilho variável (Aula 03)."""
+    for x, y, size, bright in stars:
+        c = int(bright)
+        pygame.draw.circle(surface, (c, c, c), (int(x), int(y)), size)
+
+
+def draw_explosion(surface, cx, cy, frame):
+    """Explosão — translação radial de partículas (Aula 03)."""
+    import math
+    for i in range(12):
+        angle = i * 30
+        dist = frame * 6
+        x = int(cx + dist * math.cos(math.radians(angle)))
+        y = int(cy + dist * math.sin(math.radians(angle)))
+        radius = max(1, 6 - frame)
+        color = (255, max(0, 200 - frame * 20), 0)
+        pygame.draw.circle(surface, color, (x, y), radius)
