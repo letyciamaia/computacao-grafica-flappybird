@@ -1,5 +1,4 @@
 import pygame
-import sys
 import os
 
 from src.config  import SCREEN_W, SCREEN_H, FPS, BIRD_RADIUS
@@ -8,10 +7,17 @@ from src.screens import screen_start, screen_gameover
 from src.game    import run_game
 
 pygame.init()
+pygame.joystick.init()
 pygame.mixer.init()
 
+try:
+    joystick = pygame.joystick.Joystick(0)
+    print(joystick.get_name())
+except:
+    joystick = None
+
 screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
-pygame.display.set_caption("teste")
+pygame.display.set_caption("Flappy Me")
 clock = pygame.time.Clock()
 
 font_big   = pygame.font.SysFont("Arial", 52, bold=True)
@@ -53,7 +59,7 @@ def main():
 
     while True:
         screen_start(screen, clock, fonts, photo)
-        score, hi = run_game(screen, clock, fonts, photo, snd_jump, snd_score, snd_die)
+        score, hi = run_game(screen, clock, fonts, photo, snd_jump, snd_score, snd_die, joystick)
         screen_gameover(screen, clock, fonts, score, hi, photo)
 
 
