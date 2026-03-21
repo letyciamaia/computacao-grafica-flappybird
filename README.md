@@ -17,7 +17,6 @@ Um Jogo estilo Flappy Bird desenvolvido em Python com Pygame como trabalho da di
 ## Estrutura do projeto
 ```
 ├── assets/
-│   ├── images/   ← foto do personagem (player.png)
 │   └── sounds/   ← música (music.mp3)
 ├── src/
 │   ├── config.py
