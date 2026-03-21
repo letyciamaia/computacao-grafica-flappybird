@@ -76,7 +76,7 @@ def screen_gameover(screen, clock, fonts, score, hi, photo_surf=None):
         # Fundo com gradiente animado
         r1 = int(40 + 20 * math.sin(t * 0.7))
         r2 = int(10 + 10 * math.sin(t * 0.5))
-        draw_gradient_rect(screen, (r1, 0, 60), (r2, 0, 30), (0, 0, SCREEN_W, SCREEN_H))
+        draw_gradient_rect(screen, (0, 0, r1+80), (0, 0, r2+40), (0, 0, SCREEN_W, SCREEN_H))
 
         # Atualiza e desenha partículas
         for p in particles:
@@ -102,7 +102,7 @@ def screen_gameover(screen, clock, fonts, score, hi, photo_surf=None):
 
         # Painel principal
         panel = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
-        panel.fill((10, 0, 30, 200))
+        panel.fill((0, 20, 80, 200))
         screen.blit(panel, (panel_x, panel_y))
 
         # Borda brilhante animada
@@ -116,7 +116,7 @@ def screen_gameover(screen, clock, fonts, score, hi, photo_surf=None):
 
         # Título GAME OVER com pulso
         scale = 1.0 + 0.04 * math.sin(t * 4)
-        go_surf = font_big.render("GAME OVER", True, (255, 60, 60))
+        go_surf = font_big.render("GAME OVER", True, (50, 150, 255))
         w = int(go_surf.get_width() * scale)
         h = int(go_surf.get_height() * scale)
         go_scaled = pygame.transform.scale(go_surf, (w, h))
@@ -144,7 +144,7 @@ def screen_gameover(screen, clock, fonts, score, hi, photo_surf=None):
                 int(220 * pulse),
                 int(50  * pulse),
             )
-            new_rec = font_small.render("🏆 NOVO RECORDE!", True, rec_color)
+            new_rec = font_small.render("NOVO RECORDE!", True, rec_color)
             screen.blit(new_rec, new_rec.get_rect(center=(SCREEN_W//2, panel_y + 200)))
 
         # Instrução pisca
