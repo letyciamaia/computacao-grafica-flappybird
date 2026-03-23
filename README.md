@@ -2,7 +2,7 @@
 Um Jogo estilo Flappy Bird desenvolvido em Python com Pygame como trabalho da disciplina de Computação Gráfica.
 
 ## Integrantes
-- (Letycia Maia e Samuel Nóbrega)
+- Letycia Maia e Samuel Nóbrega
 
 ## Como jogar
 - Pressione qualquer tecla ou clique para pular
