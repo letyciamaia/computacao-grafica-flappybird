@@ -1,6 +1,6 @@
-# ════════════════════════════════════════════════
+
 #  game.py — Loop principal do jogo
-# ════════════════════════════════════════════════
+
 
 import pygame
 import sys
@@ -61,7 +61,7 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
     while True:
         clock.tick(FPS)
 
-        # ── Eventos ──────────────────────────────
+        #Eventos
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 try: pygame.mixer.music.stop()
@@ -92,12 +92,12 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
                 bird_vy = JUMP_VEL
                 if snd_jump: snd_jump.play()
 
-        # ── Física ───────────────────────────────
+        #Física
         bird_vy += GRAVITY
         bird_y  += bird_vy
         bird_angle = max(-25, min(90, bird_vy * 4.5))
 
-        # ── Gera novos canos ─────────────────────
+        #Gera novos canos
         now = pygame.time.get_ticks()
         if now - last_pipe_time > PIPE_INTERVAL:
             gap_center = random.randint(int(SCREEN_H*0.25), int(SCREEN_H*0.70))
@@ -109,14 +109,14 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
             })
             last_pipe_time = now
 
-        # Translação dos canos: V=(-PIPE_SPEED, 0)
+        #Translação dos canos: V=(-PIPE_SPEED, 0)
         for p in pipes:
             p['x'] -= PIPE_SPEED
 
         # Clipping (Aula 04): remove fora da viewport
         pipes = [p for p in pipes if p['x'] > -PIPE_WIDTH - 20]
 
-        # ── Pontuação ────────────────────────────
+        #Pontuação
         for p in pipes:
             if not p['scored'] and p['x'] + PIPE_WIDTH < bird_x:
                 p['scored'] = True
@@ -124,18 +124,18 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
                 phase = (score // 5) % len(PHASES)
                 if snd_score: snd_score.play()
 
-        # ── Scroll do chão ───────────────────────
+        #Scroll do chão
         ground_offset = (ground_offset + PIPE_SPEED) % 40
 
-        # ── Parallax das nuvens ──────────────────
+        #Parallax das nuvens
         clouds = [((cx - 0.6) % (SCREEN_W + 60) - 30, cy, sc)
                   for cx, cy, sc in clouds]
 
-        # ── Pisca as estrelas ────────────────────
+        #Pisca as estrelas
         stars = [(x, y, s, max(80, min(255, b + random.randint(-10, 10))))
                  for x, y, s, b in stars]
 
-        # ── Colisão (AABB simplificado) ──────────
+        #Colisão (AABB simplificado)
         bird_rect = pygame.Rect(
             int(bird_x) - BIRD_RADIUS + 4,
             int(bird_y) - BIRD_RADIUS + 4,
@@ -173,7 +173,7 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
             save_hi(hi)
             return score, hi
 
-        # ── RENDERIZAÇÃO (framebuffer — Aula 02) ──
+        #RENDERIZAÇÃO (framebuffer — Aula 02)
         draw_gradient_rect(screen,
                            PHASES[phase]["sky_top"],
                            PHASES[phase]["sky_bot"],
