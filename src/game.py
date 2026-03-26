@@ -91,6 +91,9 @@ def run_game(screen, clock, fonts, photo_surf=None, snd_jump=None, snd_score=Non
             if event.type == pygame.MOUSEBUTTONDOWN:
                 bird_vy = JUMP_VEL
                 if snd_jump: snd_jump.play()
+            if event.type == pygame.JOYBUTTONDOWN:
+                bird_vy = JUMP_VEL
+                if snd_jump: snd_jump.play()
 
         #Física
         bird_vy += GRAVITY
